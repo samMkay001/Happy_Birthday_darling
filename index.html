@@ -32,6 +32,21 @@
             object-fit: cover;
             border-radius: clamp(10px, 3vw, 20px);
             z-index: -1;
+            /* Mobile video optimization */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            will-change: transform;
+        }
+
+        /* Ensure video plays on mobile */
+        @media (max-width: 768px) {
+            .container-video {
+                object-fit: cover;
+                object-position: center;
+                /* Force hardware acceleration */
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+            }
         }
 
         .video-overlay {
@@ -424,9 +439,8 @@
 <body>
     <div class="container">
         <!-- Video inside container -->
-        <video class="container-video" autoplay muted loop playsinline>
-            <source src="/image/2025_07_28_08_54_IMG_4835.JPG" type="video/mp4">
-            <source src="/image/2025_07_28_09_33_IMG_4838.MP4" type="video/webm">
+        <video class="container-video" autoplay muted loop playsinline preload="auto" webkit-playsinline>
+            <source src="/image/2025_07_28_09_33_IMG_4838.MP4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
 
@@ -438,7 +452,7 @@
             <h1>🎉 Birthday Surprise! 🎉</h1>
 
             <div class="hint">
-                💡 <strong>Hint:</strong> Your Birthday date<br>
+                💡 <strong>Hint:</strong> The month we first met + your birth month + my birth month<br>
                 <small>(Enter each as 2 digits: month-month-month)</small>
             </div>
 
@@ -607,8 +621,43 @@
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         }
 
+        // Force video play on mobile devices
+        function ensureVideoPlays() {
+            const video = document.querySelector('.container-video');
+            if (video) {
+                video.load(); // Reload the video
+                
+                // Try to play the video
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log('Video autoplay failed:', error);
+                        // Video autoplay was prevented, but that's okay for background videos
+                    });
+                }
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            ensureVideoPlays();
+            
+            // Retry video play after user interaction
+            document.addEventListener('touchstart', function() {
+                ensureVideoPlays();
+            }, { once: true });
+            
+            document.addEventListener('click', function() {
+                ensureVideoPlays();
+            }, { once: true });
+        });
+
         window.addEventListener('resize', handleViewportChange);
-        window.addEventListener('orientationchange', handleViewportChange);
+        window.addEventListener('orientationchange', function() {
+            handleViewportChange();
+            // Retry video after orientation change
+            setTimeout(ensureVideoPlays, 500);
+        });
         handleViewportChange(); // Initial call
 
         // Add shake animation
