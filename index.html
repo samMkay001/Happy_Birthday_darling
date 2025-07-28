@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Birthday message</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: clamp(5px, 2vw, 15px);
+            min-height: 100vh;
+            min-height: 100dvh; /* Dynamic viewport height for mobile */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: clamp(10px, 3vw, 20px);
+            z-index: -1;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: clamp(10px, 3vw, 20px);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            background: transparent;
+            border-radius: clamp(10px, 3vw, 20px);
+            padding: clamp(15px, 4vw, 40px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: min(95vw, 600px);
+            max-height: min(95vh, 95dvh);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container-content {
+            position: relative;
+            z-index: 1;
+            color: white;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 0; /* Allow flex items to shrink */
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: clamp(15px, 3vh, 25px);
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            line-height: 1.2;
+            font-weight: bold;
+        }
+
+        .code-input {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: clamp(4px, 2vw, 12px);
+            margin: clamp(15px, 3vh, 25px) auto;
+            max-width: min(350px, 90vw);
+            justify-items: center;
+        }
+
+        .code-digit {
+            width: clamp(35px, 12vw, 55px);
+            height: clamp(35px, 12vw, 55px);
+            border: 2px solid #e2e8f0;
+            border-radius: clamp(6px, 2vw, 12px);
+            font-size: clamp(16px, 5vw, 24px);
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+            touch-action: manipulation;
+            color: #333;
+        }
+
+        .code-digit:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+            transform: scale(1.05);
+        }
+
+        .hint {
+            color: white;
+            font-size: clamp(12px, 3.5vw, 16px);
+            margin: clamp(10px, 2vh, 20px) 0;
+            padding: clamp(12px, 3vw, 20px);
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: clamp(8px, 2vw, 12px);
+            border-left: 4px solid #fff;
+            backdrop-filter: blur(10px);
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .surprise-message {
+            display: none;
+            margin-top: clamp(15px, 3vh, 25px);
+            padding: clamp(15px, 4vw, 25px);
+            background-image: url('/image/2025_07_28_08_54_IMG_4832.JPG');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            border-radius: clamp(10px, 2vw, 15px);
+            font-size: clamp(13px, 3.5vw, 18px);
+            line-height: 1.6;
+            animation: fadeIn 1s ease-in;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+            flex: 1;
+            min-height: 0;
+        }
+
+        .surprise-message h2 {
+            font-size: clamp(1.1rem, 4.5vw, 1.6rem);
+            margin-bottom: clamp(10px, 2vh, 20px);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            font-weight: bold;
+        }
+
+        .hearts {
+            font-size: clamp(20px, 6vw, 32px);
+            margin: clamp(10px, 2vh, 20px) 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .error, .success {
+            font-size: clamp(11px, 3vw, 14px);
+            margin-top: clamp(8px, 2vh, 15px);
+            padding: clamp(8px, 2vw, 12px);
+            border-radius: clamp(6px, 1.5vw, 10px);
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        .success {
+            color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: clamp(10px, 3vw, 15px) clamp(20px, 5vw, 30px);
+            border-radius: clamp(20px, 5vw, 30px);
+            font-size: clamp(13px, 3.5vw, 16px);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: clamp(10px, 2vh, 20px);
+            touch-action: manipulation;
+            min-height: 44px; /* Minimum touch target */
+            width: auto;
+            max-width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .compatibility-btn {
+            background-color: #007bff;
+            border: none;
+            padding: clamp(8px, 2.5vw, 12px) clamp(15px, 4vw, 25px);
+            border-radius: clamp(6px, 1.5vw, 8px);
+            cursor: pointer;
+            font-size: clamp(12px, 3vw, 15px);
+            margin-top: clamp(10px, 2vh, 15px);
+            transition: all 0.3s ease;
+            min-height: 44px;
+            width: 100%;
+        }
+
+        .compatibility-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        /* Container queries for better responsiveness */
+        @container (max-width: 400px) {
+            .code-input {
+                gap: 3px;
+            }
+            
+            .hint {
+                font-size: 12px;
+                padding: 10px;
+            }
+        }
+
+        /* Specific breakpoints */
+        @media (max-width: 480px) {
+            body {
+                padding: 3px;
+            }
+            
+            .container {
+                width: 98vw;
+                padding: 12px;
+                max-height: 98vh;
+                max-height: 98dvh;
+            }
+            
+            .code-input {
+                gap: clamp(2px, 1vw, 6px);
+                margin: 12px auto;
+            }
+            
+            h1 {
+                margin-bottom: 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .code-digit {
+                width: clamp(30px, 13vw, 45px);
+                height: clamp(30px, 13vw, 45px);
+                font-size: clamp(14px, 5vw, 20px);
+            }
+        }
+
+        /* Landscape orientation optimizations */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .container {
+                max-height: 95vh;
+                max-height: 95dvh;
+                padding: clamp(8px, 2vh, 15px);
+            }
+            
+            h1 {
+                margin-bottom: clamp(8px, 1.5vh, 15px);
+                font-size: clamp(1.3rem, 4vh, 2rem);
+            }
+            
+            .code-input {
+                margin: clamp(8px, 1.5vh, 15px) auto;
+            }
+            
+            .hint {
+                margin: clamp(6px, 1vh, 12px) 0;
+                padding: clamp(8px, 1.5vh, 15px);
+            }
+            
+            .surprise-message {
+                margin-top: clamp(8px, 1.5vh, 15px);
+                padding: clamp(10px, 2vh, 18px);
+            }
+        }
+
+        /* Very small screens */
+        @media (max-height: 500px) {
+            .container {
+                justify-content: flex-start;
+                padding-top: clamp(5px, 1vh, 10px);
+            }
+            
+            .container-content {
+                justify-content: flex-start;
+            }
+        }
+
+        /* Large screens */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 700px;
+                padding: 50px;
+            }
+        }
+
+        /* Ultra-wide screens */
+        @media (min-width: 1600px) {
+            .container {
+                max-width: 800px;
+            }
+        }
+
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .container {
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            }
+            
+            .code-digit {
+                border-width: 1px;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            .hearts {
+                animation: none;
+            }
+            
+            .surprise-message {
+                animation: none;
+            }
+            
+            .btn, .code-digit {
+                transition: none;
+            }
+        }
+
+        /* Focus improvements for keyboard navigation */
+        .code-digit:focus-visible {
+            outline: 3px solid #4ecdc4;
+            outline-offset: 2px;
+        }
+
+        .btn:focus-visible, .compatibility-btn:focus-visible {
+            outline: 3px solid #4ecdc4;
+            outline-offset: 2px;
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            .video-overlay {
+                background: rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .container-video, .video-overlay {
+                display: none;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .container-content, .surprise-message {
+                color: black;
+                background: white;
+            }
+        }
+
+        /* Container query support */
+        .container {
+            container-type: inline-size;
+        }
+
+        /* iOS Safari specific fixes */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                min-height: -webkit-fill-available;
+            }
+            
+            .container {
+                max-height: -webkit-fill-available;
+            }
+        }
+
+        /* Prevent zoom on iOS when focusing inputs */
+        @media screen and (-webkit-min-device-pixel-ratio: 0) {
+            .code-digit {
+                font-size: max(16px, clamp(16px, 5vw, 24px));
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Video inside container -->
+        <video class="container-video" autoplay muted loop playsinline>
+            <source src="/image/2025_07_28_08_54_IMG_4835.JPG" type="video/mp4">
+            <source src="/image/2025_07_28_09_33_IMG_4838.MP4" type="video/webm">
+            Your browser does not support the video tag.
+        </video>
+
+        <!-- Optional overlay for better text readability -->
+        <div class="video-overlay"></div>
+
+        <!-- Content that appears over the video -->
+        <div class="container-content">
+            <h1>🎉 Birthday Surprise! 🎉</h1>
+
+            <div class="hint">
+                💡 <strong>Hint:</strong> Your Birthday date<br>
+                <small>(Enter each as 2 digits: month-month-month)</small>
+            </div>
+
+            <div class="code-input">
+                <input type="text" class="code-digit" maxlength="1" id="digit1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+                <input type="text" class="code-digit" maxlength="1" id="digit2" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+                <input type="text" class="code-digit" maxlength="1" id="digit3" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+                <input type="text" class="code-digit" maxlength="1" id="digit4" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+                <input type="text" class="code-digit" maxlength="1" id="digit5" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+                <input type="text" class="code-digit" maxlength="1" id="digit6" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+            </div>
+
+            <button class="btn" onclick="checkCode()">Unlock Surprise 💝</button>
+
+            <div id="message"></div>
+
+            <div class="surprise-message" id="surprise">
+                <div class="hearts">💕 💖 💕</div>
+                <h2>Happy Birthday, my darling! 🎂</h2>
+                <p>
+                    <span class="emoji">🎉</span> Happy Birthday! <span class="emoji">🎂</span> Today marks another
+                    wonderful year of your incredible journey through life. May this special day bring you endless joy,
+                    laughter, and unforgettable memories with the people you love most. As you blow out your candles,
+                    remember that each flame represents a wish coming true and a dream taking flight. Here's to
+                    celebrating all the amazing moments from the past year and looking forward to the exciting
+                    adventures that await you. You deserve all the happiness, success, and beautiful surprises that life
+                    has to offer. Enjoy every moment of your special day! <span class="emoji">🎈</span>
+                </p>
+                <div class="hearts">💕 💖 💕</div>
+                <button type="button" class="compatibility-btn" onclick="window.location.href='/compatibility.html'"
+                    aria-label="Check compatibility">
+                    Check your lover's compatibility😉
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // You can customize these values
+        const correctCode = "280725"; // Example: 02 (February), 07 (July), 06 (June)
+
+        // Auto-focus next input with improved mobile handling
+        document.querySelectorAll('.code-digit').forEach((input, index) => {
+            input.addEventListener('input', function(e) {
+                // Only allow numbers
+                this.value = this.value.replace(/[^0-9]/g, '');
+
+                if (this.value.length === 1 && index < 5) {
+                    const nextInput = document.getElementById(`digit${index + 2}`);
+                    if (nextInput) {
+                        nextInput.focus();
+                    }
+                }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                    const prevInput = document.getElementById(`digit${index}`);
+                    if (prevInput) {
+                        prevInput.focus();
+                    }
+                }
+                
+                // Handle arrow keys for better navigation
+                if (e.key === 'ArrowLeft' && index > 0) {
+                    e.preventDefault();
+                    document.getElementById(`digit${index}`).focus();
+                }
+                
+                if (e.key === 'ArrowRight' && index < 5) {
+                    e.preventDefault();
+                    document.getElementById(`digit${index + 2}`).focus();
+                }
+            });
+
+            // Prevent non-numeric input
+            input.addEventListener('keypress', function(e) {
+                if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+
+            // Handle paste events
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+                const numbers = pastedData.replace(/[^0-9]/g, '');
+                
+                if (numbers.length === 6) {
+                    numbers.split('').forEach((digit, i) => {
+                        const digitInput = document.getElementById(`digit${i + 1}`);
+                        if (digitInput) {
+                            digitInput.value = digit;
+                        }
+                    });
+                }
+            });
+        });
+
+        function checkCode() {
+            const enteredCode = Array.from(document.querySelectorAll('.code-digit'))
+                .map(input => input.value)
+                .join('');
+
+            const messageDiv = document.getElementById('message');
+            const surpriseDiv = document.getElementById('surprise');
+
+            if (enteredCode.length !== 6) {
+                messageDiv.innerHTML = '<div class="error">Please enter all 6 digits!</div>';
+                return;
+            }
+
+            if (enteredCode === correctCode) {
+                messageDiv.innerHTML = '<div class="success">🎉 Code Unlocked! 🎉</div>';
+                surpriseDiv.style.display = 'block';
+
+                // Smooth scroll to surprise message
+                setTimeout(() => {
+                    surpriseDiv.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start',
+                        inline: 'nearest'
+                    });
+                }, 500);
+
+                // Add celebration effects
+                setTimeout(() => {
+                    document.body.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7)';
+                    document.body.style.backgroundSize = '400% 400%';
+                    document.body.style.animation = 'gradient 3s ease infinite';
+
+                    if (!document.getElementById('celebration-styles')) {
+                        const style = document.createElement('style');
+                        style.id = 'celebration-styles';
+                        style.textContent = `
+                            @keyframes gradient {
+                                0% { background-position: 0% 50%; }
+                                50% { background-position: 100% 50%; }
+                                100% { background-position: 0% 50%; }
+                            }
+                        `;
+                        document.head.appendChild(style);
+                    }
+                }, 500);
+            } else {
+                messageDiv.innerHTML = '<div class="error">Oops! Try again. Think about our special dates 💭</div>';
+                
+                // Shake animation for incorrect code
+                document.querySelector('.code-input').style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    document.querySelector('.code-input').style.animation = '';
+                }, 500);
+            }
+        }
+
+        // Allow Enter key to submit
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkCode();
+            }
+        });
+
+        // Handle viewport height changes (mobile keyboard)
+        function handleViewportChange() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+
+        window.addEventListener('resize', handleViewportChange);
+        window.addEventListener('orientationchange', handleViewportChange);
+        handleViewportChange(); // Initial call
+
+        // Add shake animation
+        const shakeStyle = document.createElement('style');
+        shakeStyle.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(shakeStyle);
+
+        // Improve focus management on mobile
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('.code-digit').forEach(input => {
+                input.addEventListener('touchstart', function() {
+                    this.focus();
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

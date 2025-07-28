@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Calculator 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff6b9d, #c44569, #f8b500, #ff9ff3);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h1 {
+            color: #c44569;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #c44569;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ff6b9d;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #c44569;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(196, 69, 105, 0.3);
+        }
+
+        .heart-divider {
+            font-size: 2rem;
+            margin: 20px 0;
+            animation: heartbeat 2s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b9d, #c44569);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(196, 69, 105, 0.4);
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(196, 69, 105, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 20px;
+            background: linear-gradient(45deg, rgba(255, 107, 157, 0.1), rgba(196, 69, 105, 0.1));
+            border: 2px solid #ff6b9d;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .percentage {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #c44569;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .message {
+            font-size: 1.2rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 20px;
+            animation: floatUp 4s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(100vh) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        .names-display {
+            font-size: 1.3rem;
+            color: #c44569;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts" id="hearts"></div>
+    
+    <div class="container">
+        <h1>💕 Love Calculator 💕</h1>
+        <p class="subtitle">Discover your romantic compatibility!</p>
+        
+        <div class="input-group">
+            <label for="name1">Your Name:</label>
+            <input type="text" id="name1" placeholder="Enter your name">
+        </div>
+        
+        <div class="heart-divider">💖</div>
+        
+        <div class="input-group">
+            <label for="name2">Their Name:</label>
+            <input type="text" id="name2" placeholder="Enter their name">
+        </div>
+        
+        <button onclick="calculateLove()">Calculate Love! 💕</button>
+        
+        <div class="result" id="result">
+            <div class="names-display" id="namesDisplay"></div>
+            <div class="percentage" id="percentage"></div>
+            <div class="message" id="message"></div>
+        </div>
+    </div>
+
+    <script>
+        const loveMessages = [
+            { min: 90, message: "Perfect match! You two are soulmates destined to be together! 🌟💕" },
+            { min: 80, message: "Incredible connection! Your love story is one for the ages! 💖✨" },
+            { min: 70, message: "Great compatibility! You make each other laugh and smile every day! 😊💕" },
+            { min: 60, message: "Good potential! With a little effort, you could be amazing together! 💪❤️" },
+            { min: 50, message: "There's definitely something there! Give it time to blossom! 🌸💕" },
+            { min: 40, message: "Friendship first! Sometimes the best relationships start as great friendships! 👫💕" },
+            { min: 30, message: "Opposites attract! Your differences could be your greatest strength! ⚡💖" },
+            { min: 20, message: "It's complicated, but love finds a way! Keep an open heart! 💝🤞" },
+            { min: 10, message: "Better as friends, but friendship is beautiful too! 🤝💛" },
+            { min: 0, message: "Sometimes timing isn't right, but never stop believing in love! 🌈💕" }
+        ];
+
+        // Audio context for generating tones
+        let audioContext;
+        let currentAudioNodes = [];
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function stopAllAudio() {
+            currentAudioNodes.forEach(node => {
+                if (node.stop) node.stop();
+            });
+            currentAudioNodes = [];
+        }
+
+        function playMelodyForScore(percentage) {
+            initAudio();
+            stopAllAudio();
+            
+            let melody;
+            
+            if (percentage >= 90) {
+                
+                melody = [523.25, 659.25, 783.99, 1046.5, 1174.7]; 
+            } else if (percentage >= 80) {
+                
+                melody = [440, 523.25, 659.25, 783.99, 880]; 
+            } else if (percentage >= 70) {
+                
+                melody = [523.25, 587.33, 659.25, 698.46, 783.99]; 
+            } else if (percentage >= 60) {
+            
+                melody = [392, 440, 493.88, 523.25, 587.33]; 
+            } else if (percentage >= 50) {
+            
+                melody = [440, 493.88, 523.25, 493.88, 440]; 
+            } else if (percentage >= 40) {
+                
+                melody = [349.23, 392, 440, 392, 349.23]; 
+            } else if (percentage >= 30) {
+            
+                melody = [523.25, 349.23, 659.25, 293.66, 440];
+            } else if (percentage >= 20) {
+
+                melody = [330, 370, 311.13, 349.23, 293.66]; 
+            } else if (percentage >= 10) {
+                
+                melody = [293.66, 329.63, 349.23, 329.63, 293.66];
+            } else {
+                melody = [261.63, 293.66, 329.63, 293.66, 261.63];
+            }
+            
+           
+            melody.forEach((frequency, index) => {
+                setTimeout(() => {
+                    playTone(frequency, 0.4, 0.1);
+                }, index * 300);
+            });
+        }
+
+        function playTone(frequency, duration, volume = 0.1) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+            
+            currentAudioNodes.push(oscillator);
+            
+            
+            setTimeout(() => {
+                const index = currentAudioNodes.indexOf(oscillator);
+                if (index > -1) {
+                    currentAudioNodes.splice(index, 1);
+                }
+            }, duration * 1000 + 100);
+        }
+
+        function calculateLove() {
+            const name1 = document.getElementById('name1').value.trim();
+            const name2 = document.getElementById('name2').value.trim();
+            
+            if (!name1 || !name2) {
+                alert('Please enter both names! 💕');
+                return;
+            }
+            
+            
+            const combined = (name1 + name2).toLowerCase();
+            let score = 0;
+          
+            for (let i = 0; i < combined.length; i++) {
+                score += combined.charCodeAt(i);
+            }
+        
+            score += name1.length * name2.length;
+           
+            score = score % 101;
+            
+  
+            displayResult(name1, name2, score);
+            createHearts();
+        }
+        
+        function displayResult(name1, name2, percentage) {
+            const result = document.getElementById('result');
+            const namesDisplay = document.getElementById('namesDisplay');
+            const percentageElement = document.getElementById('percentage');
+            const messageElement = document.getElementById('message');
+            
+            namesDisplay.textContent = `${name1} 💕 ${name2}`;
+            percentageElement.textContent = `${percentage}%`;
+            
+         
+            const message = loveMessages.find(msg => percentage >= msg.min);
+            messageElement.textContent = message.message;
+            
+            result.classList.add('show');
+            
+            
+            setTimeout(() => {
+                playMelodyForScore(percentage);
+            }, 500);
+        }
+        
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            const heartSymbols = ['💕', '💖', '💗', '💝', '💟', '❤️', '💜', '💙'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDelay = Math.random() * 2 + 's';
+                    heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 5000);
+                }, i * 200);
+            }
+        }
+      
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateLove();
+            }
+        });
+    </script>
+</body>
+</html>
+</body>
+</html>
