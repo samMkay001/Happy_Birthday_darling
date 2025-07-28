@@ -484,8 +484,8 @@
             <h1>🎉 Birthday Surprise! 🎉</h1>
 
             <div class="hint">
-                💡 <strong>Hint:</strong> The month we first met + your birth month + my birth month<br>
-                <small>(Enter each as 2 digits: month-month-month)</small>
+                💡 <strong>Hint:</strong> Your Birthday (DD-MM-YYYY)<br>
+                <small>(Enter each as 2 digits: Day-month-Year)</small>
             </div>
 
             <div class="code-input">
@@ -523,13 +523,10 @@
     </div>
 
     <script>
-        // You can customize these values
         const correctCode = "280725"; // Example: 02 (February), 07 (July), 06 (June)
 
-        // Auto-focus next input with improved mobile handling
         document.querySelectorAll('.code-digit').forEach((input, index) => {
             input.addEventListener('input', function(e) {
-                // Only allow numbers
                 this.value = this.value.replace(/[^0-9]/g, '');
 
                 if (this.value.length === 1 && index < 5) {
@@ -548,7 +545,6 @@
                     }
                 }
                 
-                // Handle arrow keys for better navigation
                 if (e.key === 'ArrowLeft' && index > 0) {
                     e.preventDefault();
                     document.getElementById(`digit${index}`).focus();
@@ -560,14 +556,12 @@
                 }
             });
 
-            // Prevent non-numeric input
             input.addEventListener('keypress', function(e) {
                 if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
                     e.preventDefault();
                 }
             });
 
-            // Handle paste events
             input.addEventListener('paste', function(e) {
                 e.preventDefault();
                 const pastedData = (e.clipboardData || window.clipboardData).getData('text');
@@ -601,7 +595,6 @@
                 messageDiv.innerHTML = '<div class="success">🎉 Code Unlocked! 🎉</div>';
                 surpriseDiv.style.display = 'block';
 
-                // Smooth scroll to surprise message
                 setTimeout(() => {
                     surpriseDiv.scrollIntoView({ 
                         behavior: 'smooth', 
@@ -610,7 +603,6 @@
                     });
                 }, 500);
 
-                // Add celebration effects
                 setTimeout(() => {
                     document.body.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7)';
                     document.body.style.backgroundSize = '400% 400%';
@@ -632,7 +624,6 @@
             } else {
                 messageDiv.innerHTML = '<div class="error">Oops! Try again. Think about our special dates 💭</div>';
                 
-                // Shake animation for incorrect code
                 document.querySelector('.code-input').style.animation = 'shake 0.5s ease-in-out';
                 setTimeout(() => {
                     document.querySelector('.code-input').style.animation = '';
@@ -640,7 +631,6 @@
             }
         }
 
-        // Allow Enter key to submit
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 checkCode();
